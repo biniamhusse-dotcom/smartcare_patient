@@ -1,0 +1,28 @@
+Option 2: Full Clean Restart (Best if stuck or error occurs)
+Use this if you want to stop everything cleanly and then start again.
+Stop and remove containers:
+code
+Bash
+    sudo docker compose down
+    Start again and build:
+code
+Bash
+    sudo docker compose up -d --build
+Option 3: "Hard Reset" (Deletes all Database data)
+Warning: This will delete all users, facilities, and reports you have entered. It will re-run your init.sql file from scratch.
+Stop everything and delete volumes:
+code
+Bash
+    sudo docker compose down -v
+Start fresh:
+code
+Bash
+    sudo docker compose up -d --build
+Summary of Commands
+Action	Command
+    Stop only	sudo docker compose stop
+    Start only	sudo docker compose start
+    Stop and Remove	sudo docker compose down
+    Rebuild & Refresh	sudo docker compose up -d --build
+    Check Status	sudo docker ps
+    View Logs	sudo docker compose logs -f

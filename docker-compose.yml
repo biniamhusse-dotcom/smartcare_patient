@@ -1,0 +1,57 @@
+services:
+  app:
+    build: .
+    container_name: smartcare_patient
+    restart: always
+    ports:
+      - "8087:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - smartcare_net
+
+  db:
+    image: mysql:8.0
+    container_name: smartcare_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: boru_meda_hospital
+      MYSQL_ROOT_PASSWORD: boru_meda_hospital
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pboru_meda_hospital"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartcare_net
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: smartcare_phpmyadmin
+    restart: always
+    ports:
+      - "8084:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: boru_meda_hospital
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - smartcare_net
+
+networks:
+  smartcare_net:
+    driver: bridge
+
+volumes:
+  db_data:
