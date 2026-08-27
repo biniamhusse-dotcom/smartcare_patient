@@ -215,9 +215,9 @@ $isAdmin = isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
 <script>
 $(document).ready(function() {
     
-    // Function to collect all inputs and call search logic
+    let searchTimer = null;
+
     function performSearch() {
-        // Collect all data from the yellow row
         let searchData = {
             p_id:      $('#p_id').val(),
             fname:     $('#fname').val(),
@@ -230,10 +230,8 @@ $(document).ready(function() {
             mobile:    $('#mobile').val()
         };
 
-        // Show loading state
-        $("#resultBody").html('<tr><td colspan="9" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Searching Database...</td></tr>');
+        $("#resultBody").html('<tr><td colspan="9" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Searching...</td></tr>');
 
-        // AJAX POST request
         $.ajax({
             url: 'includes/search_logic.php',
             method: 'POST',
@@ -242,19 +240,29 @@ $(document).ready(function() {
                 $("#resultBody").html(response);
             },
             error: function() {
-                $("#resultBody").html('<tr><td colspan="9" class="text-center text-danger">Server Error: Could not retrieve data.</td></tr>');
+                $("#resultBody").html('<tr><td colspan="9" class="text-center text-danger">Server Error.</td></tr>');
             }
         });
     }
 
-    // Bind search to button click
-    $("#searchBtn").click(function() {
-        performSearch();
-    });
+    function debouncedSearch() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(performSearch, 300);
+    }
 
-    // Also trigger search when pressing "Enter" inside any input
+    // Live search on typing
+    $(".search-yellow-row input").on('input', debouncedSearch);
+
+    // Live search on select change
+    $(".search-yellow-row select").on('change', performSearch);
+
+    // Button click
+    $("#searchBtn").click(performSearch);
+
+    // Enter key
     $(".search-yellow-row input").keypress(function(e) {
         if (e.which == 13) {
+            clearTimeout(searchTimer);
             performSearch();
         }
     });
