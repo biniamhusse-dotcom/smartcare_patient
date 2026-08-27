@@ -148,7 +148,7 @@ try {
                 <div class="col">
                     <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #1a5276, #2980b9); color: white;">
                         <div class="card-body py-3">
-                            <h3 class="mb-0"><?php echo number_format($stats['total']); ?></h3>
+                            <h3 class="mb-0" id="statTotal"><?php echo number_format($stats['total']); ?></h3>
                             <small>Total Patients</small>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ try {
                 <div class="col">
                     <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #2471a3, #5dade2); color: white;">
                         <div class="card-body py-3">
-                            <h3 class="mb-0"><?php echo number_format($stats['male']); ?></h3>
+                            <h3 class="mb-0" id="statMale"><?php echo number_format($stats['male']); ?></h3>
                             <small>Male Patients</small>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ try {
                 <div class="col">
                     <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #884ea0, #bb8fce); color: white;">
                         <div class="card-body py-3">
-                            <h3 class="mb-0"><?php echo number_format($stats['female']); ?></h3>
+                            <h3 class="mb-0" id="statFemale"><?php echo number_format($stats['female']); ?></h3>
                             <small>Female Patients</small>
                         </div>
                     </div>
@@ -172,7 +172,7 @@ try {
                 <div class="col">
                     <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #1e8449, #58d68d); color: white;">
                         <div class="card-body py-3">
-                            <h3 class="mb-0"><?php echo number_format($stats['with_dob']); ?></h3>
+                            <h3 class="mb-0" id="statDob"><?php echo number_format($stats['with_dob']); ?></h3>
                             <small>With Date of Birth</small>
                         </div>
                     </div>
@@ -180,7 +180,7 @@ try {
                 <div class="col">
                     <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #ca6f1e, #f0b27a); color: white;">
                         <div class="card-body py-3">
-                            <h3 class="mb-0"><?php echo number_format($stats['with_mobile']); ?></h3>
+                            <h3 class="mb-0" id="statMobile"><?php echo number_format($stats['with_mobile']); ?></h3>
                             <small>With Mobile Number</small>
                         </div>
                     </div>
@@ -278,9 +278,10 @@ try {
 $(document).ready(function() {
     
     let searchTimer = null;
+    let statsTimer = null;
 
-    function performSearch() {
-        let searchData = {
+    function getSearchData() {
+        return {
             p_id:      $('#p_id').val(),
             fname:     $('#fname').val(),
             mname:     $('#mname').val(),
@@ -291,13 +292,33 @@ $(document).ready(function() {
             community: $('#community').val(),
             mobile:    $('#mobile').val()
         };
+    }
+
+    function updateStats(data) {
+        $.ajax({
+            url: 'includes/get_stats.php',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(s) {
+                $('#statTotal').text(Number(s.total).toLocaleString());
+                $('#statMale').text(Number(s.male).toLocaleString());
+                $('#statFemale').text(Number(s.female).toLocaleString());
+                $('#statDob').text(Number(s.with_dob).toLocaleString());
+                $('#statMobile').text(Number(s.with_mobile).toLocaleString());
+            }
+        });
+    }
+
+    function performSearch() {
+        let data = getSearchData();
 
         $("#resultBody").html('<tr><td colspan="9" class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary"></div> Searching...</td></tr>');
 
         $.ajax({
             url: 'includes/search_logic.php',
             method: 'POST',
-            data: searchData,
+            data: data,
             success: function(response) {
                 $("#resultBody").html(response);
             },
@@ -305,6 +326,8 @@ $(document).ready(function() {
                 $("#resultBody").html('<tr><td colspan="9" class="text-center text-danger">Server Error.</td></tr>');
             }
         });
+
+        updateStats(data);
     }
 
     function debouncedSearch() {
