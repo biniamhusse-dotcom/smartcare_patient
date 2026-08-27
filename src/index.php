@@ -1,6 +1,20 @@
 <?php
 session_start();
+require_once 'config/db.php';
 $isAdmin = isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
+
+// Fetch summary stats
+try {
+    $stats = $pdo->query("SELECT 
+        COUNT(*) as total,
+        SUM(sex = 'M') as male,
+        SUM(sex = 'F') as female,
+        SUM(dob IS NOT NULL AND dob != '') as with_dob,
+        SUM(mobile_number IS NOT NULL AND mobile_number != '') as with_mobile
+    FROM patients")->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $stats = ['total' => 0, 'male' => 0, 'female' => 0, 'with_dob' => 0, 'with_mobile' => 0];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -126,6 +140,54 @@ $isAdmin = isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
         </div>
     </div>
     <?php endif; ?>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-11">
+            <div class="row g-3">
+                <div class="col">
+                    <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #1a5276, #2980b9); color: white;">
+                        <div class="card-body py-3">
+                            <h3 class="mb-0"><?php echo number_format($stats['total']); ?></h3>
+                            <small>Total Patients</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #2471a3, #5dade2); color: white;">
+                        <div class="card-body py-3">
+                            <h3 class="mb-0"><?php echo number_format($stats['male']); ?></h3>
+                            <small>Male Patients</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #884ea0, #bb8fce); color: white;">
+                        <div class="card-body py-3">
+                            <h3 class="mb-0"><?php echo number_format($stats['female']); ?></h3>
+                            <small>Female Patients</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #1e8449, #58d68d); color: white;">
+                        <div class="card-body py-3">
+                            <h3 class="mb-0"><?php echo number_format($stats['with_dob']); ?></h3>
+                            <small>With Date of Birth</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card text-center shadow-sm border-0" style="background: linear-gradient(135deg, #ca6f1e, #f0b27a); color: white;">
+                        <div class="card-body py-3">
+                            <h3 class="mb-0"><?php echo number_format($stats['with_mobile']); ?></h3>
+                            <small>With Mobile Number</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 2. SEARCH UI SECTION -->
     <div class="row justify-content-center">
