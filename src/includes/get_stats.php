@@ -27,16 +27,16 @@ try {
     if ($dob !== '') { $conditions[] = "dob = ?"; $params[] = $dob; }
     if ($district !== '') { $conditions[] = "district_name LIKE ?"; $params[] = "%$district%"; }
     if ($community !== '') { $conditions[] = "community_name LIKE ?"; $params[] = "%$community%"; }
-    if ($mobile !== '') { $conditions[] = "mobile_number LIKE ?"; $params[] = "%$mobile%"; }
+    if ($mobile !== '') { $conditions[] = "mobile_number LIKE ? AND mobile_number != ''"; $params[] = "%$mobile%"; }
 
     $whereClause = $hasFilter ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
     $statsSql = "SELECT 
         COUNT(*) as total,
-        IFNULL(SUM(sex = 'M'), 0) as male,
-        IFNULL(SUM(sex = 'F'), 0) as female,
-        IFNULL(SUM(dob IS NOT NULL AND dob != ''), 0) as with_dob,
-        IFNULL(SUM(mobile_number IS NOT NULL AND mobile_number != ''), 0) as with_mobile
+        SUM(CASE WHEN sex = 'M' THEN 1 ELSE 0 END) as male,
+        SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) as female,
+        SUM(CASE WHEN dob IS NOT NULL THEN 1 ELSE 0 END) as with_dob,
+        SUM(CASE WHEN mobile_number IS NOT NULL AND mobile_number != '' THEN 1 ELSE 0 END) as with_mobile
         FROM patients $whereClause";
     $statsStmt = $pdo->prepare($statsSql);
     $statsStmt->execute($params);
