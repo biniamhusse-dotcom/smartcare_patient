@@ -1,3 +1,7 @@
+<?php
+session_start();
+$isAdmin = isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +11,7 @@
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -76,13 +81,17 @@
 
 <div class="container-fluid px-4">
 
-    <!-- 1. CSV IMPORT SECTION (Top) -->
+    <!-- 1. CSV IMPORT SECTION (Top) - Admin Only -->
+    <?php if ($isAdmin): ?>
     <div class="row justify-content-center mt-3">
         <div class="col-md-11">
             <div class="import-card shadow-sm">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                    <h6 class="text-muted mb-0">Admin: Import Patient Database (CSV)</h6>
-                    <a href="/admin/login.php" class="btn btn-sm btn-outline-primary"><i class="bi bi-lock"></i> Admin Login</a>
+                    <h6 class="text-muted mb-0"><i class="bi bi-shield-lock"></i> Admin: Import Patient Database (CSV)</h6>
+                    <div>
+                        <a href="/admin/index.php" class="btn btn-sm btn-success me-1"><i class="bi bi-gear"></i> Admin Panel</a>
+                        <a href="/admin/logout.php" class="btn btn-sm btn-outline-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </div>
                 </div>
                 
                 <?php if(isset($_GET['status'])): ?>
@@ -107,6 +116,16 @@
             </div>
         </div>
     </div>
+    <?php else: ?>
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-11">
+            <div class="import-card shadow-sm d-flex justify-content-between align-items-center">
+                <span class="text-muted"><i class="bi bi-lock"></i> Admin access required for CSV import</span>
+                <a href="/admin/login.php" class="btn btn-sm btn-primary"><i class="bi bi-lock"></i> Admin Login</a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- 2. SEARCH UI SECTION -->
     <div class="row justify-content-center">
