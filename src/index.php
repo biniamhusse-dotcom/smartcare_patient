@@ -234,9 +234,12 @@ try {
             </div>
 
             <!-- Search Button (Matching Icon style) -->
-            <div class="btn-search-container">
+            <div class="btn-search-container d-flex align-items-center gap-2">
                 <button type="button" id="searchBtn" class="btn-search-icon shadow-sm">
                     <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Search">
+                </button>
+                <button type="button" id="clearBtn" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Clear Filters
                 </button>
             </div>
 
@@ -350,6 +353,13 @@ $(document).ready(function() {
             clearTimeout(searchTimer);
             performSearch();
         }
+    });
+
+    // Clear filters
+    $("#clearBtn").click(function() {
+        $(".search-yellow-row input").val('');
+        $(".search-yellow-row select").val('');
+        performSearch();
     });
 });
 </script>
