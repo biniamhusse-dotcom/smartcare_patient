@@ -66,7 +66,7 @@ try {
         $params[] = "%$mobile%";
     }
 
-    $whereClause = implode(' OR ', $conditions);
+    $whereClause = implode(' AND ', $conditions);
 
     $sql = "SELECT 
                 patient_id,
