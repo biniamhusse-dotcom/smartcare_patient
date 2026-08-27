@@ -1,11 +1,14 @@
 <?php
 session_start();
 require_once '../config/db.php';
+require_once '../includes/settings.php';
 
 if (isset($_SESSION['admin_id'])) {
     header("Location: /admin/index.php");
     exit();
 }
+
+$facilityName = getFacilityName();
 
 $error = '';
 
@@ -42,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Boru Meda Hospital</title>
+    <title>Admin Login - <?php echo e($facilityName); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -88,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-card">
         <div class="login-header">
-            <h2>Boru Meda General Hospital</h2>
+            <h2><?php echo e($facilityName); ?></h2>
             <p>Admin Panel Login</p>
         </div>
 

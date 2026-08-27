@@ -1,7 +1,9 @@
 <?php
 session_start();
 require_once 'config/db.php';
+require_once 'includes/settings.php';
 $isAdmin = isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id']);
+$facilityName = getFacilityName();
 
 // Fetch summary stats
 try {
@@ -15,13 +17,15 @@ try {
 } catch (PDOException $e) {
     $stats = ['total' => 0, 'male' => 0, 'female' => 0, 'with_dob' => 0, 'with_mobile' => 0];
 }
+
+function e($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boru Meda General Hospital - MRN Search</title>
+    <title><?php echo e($facilityName); ?> - MRN Search</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -193,7 +197,7 @@ try {
     <div class="row justify-content-center">
         <div class="col-md-11">
             
-            <div class="app-header shadow-sm">Boru meda General Hospital MRN Search Page</div>
+            <div class="app-header shadow-sm"><?php echo e($facilityName); ?> MRN Search Page</div>
 
             <div class="table-responsive bg-white shadow-sm">
                 <table class="table table-bordered mb-0">

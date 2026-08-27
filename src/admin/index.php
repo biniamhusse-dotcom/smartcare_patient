@@ -1,7 +1,10 @@
 <?php
 require_once '../includes/auth.php';
 require_once '../config/db.php';
+require_once '../includes/settings.php';
 requireLogin();
+
+$facilityName = getFacilityName();
 
 $message = '';
 $messageType = '';
@@ -58,7 +61,7 @@ function e($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Boru Meda Hospital</title>
+    <title>Admin Dashboard - <?php echo e($facilityName); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -92,11 +95,12 @@ function e($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 
 <div class="admin-header">
     <div>
-        <h4><i class="bi bi-hospital"></i> Boru Meda Hospital - Admin Panel</h4>
+        <h4><i class="bi bi-hospital"></i> <?php echo e($facilityName); ?> - Admin Panel</h4>
         <small>Welcome, <?php echo e($_SESSION['admin_name'] ?? 'Admin'); ?></small>
     </div>
     <div>
         <a href="/" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-search"></i> Public Search</a>
+        <a href="settings.php" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-gear"></i> Settings</a>
         <a href="logout.php" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </div>
 </div>
