@@ -1,7 +1,6 @@
 <?php
+header('Content-Type: application/json');
 require_once '../config/db.php';
-
-function e($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
 
 $p_id      = trim($_POST['p_id'] ?? '');
 $fname     = trim($_POST['fname'] ?? '');
@@ -32,19 +31,24 @@ try {
 
     $whereClause = $hasFilter ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
-    // Get filtered stats
     $statsSql = "SELECT 
         COUNT(*) as total,
-        SUM(sex = 'M') as male,
-        SUM(sex = 'F') as female,
-        SUM(dob IS NOT NULL AND dob != '') as with_dob,
-        SUM(mobile_number IS NOT NULL AND mobile_number != '') as with_mobile
+        IFNULL(SUM(sex = 'M'), 0) as male,
+        IFNULL(SUM(sex = 'F'), 0) as female,
+        IFNULL(SUM(dob IS NOT NULL AND dob != ''), 0) as with_dob,
+        IFNULL(SUM(mobile_number IS NOT NULL AND mobile_number != ''), 0) as with_mobile
         FROM patients $whereClause";
     $statsStmt = $pdo->prepare($statsSql);
     $statsStmt->execute($params);
     $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
 
-    echo json_encode($stats);
+    echo json_encode([
+        'total' => (int)$stats['total'],
+        'male' => (int)$stats['male'],
+        'female' => (int)$stats['female'],
+        'with_dob' => (int)$stats['with_dob'],
+        'with_mobile' => (int)$stats['with_mobile']
+    ]);
 
 } catch (PDOException $e) {
     error_log($e->getMessage());
