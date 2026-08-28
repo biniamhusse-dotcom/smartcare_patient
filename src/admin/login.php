@@ -3,6 +3,8 @@ session_start();
 require_once '../config/db.php';
 require_once '../includes/settings.php';
 
+function e($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
+
 if (isset($_SESSION['admin_id'])) {
     header("Location: /admin/index.php");
     exit();
